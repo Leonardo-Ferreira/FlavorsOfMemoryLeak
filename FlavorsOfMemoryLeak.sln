@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 25.0.1706.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlavorsOfMemoryLeak.Api", "FlavorsOfMemoryLeak.Api\FlavorsOfMemoryLeak.Api.csproj", "{E6D30FD0-3D74-4791-A845-448ED3A1E108}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{01D68662-1429-4165-8095-8A556DE92976}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E6D30FD0-3D74-4791-A845-448ED3A1E108}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6D30FD0-3D74-4791-A845-448ED3A1E108}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6D30FD0-3D74-4791-A845-448ED3A1E108}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6D30FD0-3D74-4791-A845-448ED3A1E108}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01D68662-1429-4165-8095-8A556DE92976}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01D68662-1429-4165-8095-8A556DE92976}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01D68662-1429-4165-8095-8A556DE92976}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01D68662-1429-4165-8095-8A556DE92976}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {182CDF6C-0FE4-4097-939C-441F93D8494A}
+	EndGlobalSection
+EndGlobal

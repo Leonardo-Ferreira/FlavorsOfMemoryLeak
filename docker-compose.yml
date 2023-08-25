@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  flavorsofmemoryleak.api:
+    image: ${DOCKER_REGISTRY-}flavorsofmemoryleak
+    build:
+      context: .
+      dockerfile: FlavorsOfMemoryLeak.Api/Dockerfile
