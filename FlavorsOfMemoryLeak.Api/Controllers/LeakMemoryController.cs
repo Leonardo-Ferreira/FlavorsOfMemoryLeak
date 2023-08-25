@@ -4,16 +4,31 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FlavorsOfMemoryLeak.Api.Controllers;
 
-public class MyLeakSource
+public class MyManagedLeakSource
 {
-    static MyLeakSource inst;
+    static MyManagedLeakSource inst;
     public List<byte[]> List { get; set; }
-    public static MyLeakSource GetMySingleton()
+    public static MyManagedLeakSource GetMySingleton()
     {
         if (inst == null)
         {
-            inst = new MyLeakSource();
+            inst = new MyManagedLeakSource();
             inst.List = new List<byte[]>(5000);
+        }
+        return inst;
+    }
+}
+
+public class MyUnmanagedActuallyNotALeakSource
+{
+    static MyUnmanagedActuallyNotALeakSource inst;
+    public List<IntPtr> List { get; set; }
+    public static MyUnmanagedActuallyNotALeakSource GetMySingleton()
+    {
+        if (inst == null)
+        {
+            inst = new MyUnmanagedActuallyNotALeakSource();
+            inst.List = new List<IntPtr>(5000);
         }
         return inst;
     }
@@ -32,7 +47,7 @@ public class LeakMemoryController : ControllerBase
     /// <param name="amountMB"></param>
     /// <returns></returns>
     [HttpGet("/leak")]
-    public MemoryReport Leak(string managedOrUnamanagedMemory, string BigOrSmallBlock, int amountMB)
+    public MemoryReport Leak(string flavor, string BigOrSmallBlock, int amountMB)
     {
         var rdn = Random.Shared;
         int buffSize;
@@ -47,7 +62,7 @@ public class LeakMemoryController : ControllerBase
         }
         var iterations = (amountMB * MEGABYTE / buffSize) + 1;
 
-        if (managedOrUnamanagedMemory.ToLower() == "unmanaged")
+        if (flavor.ToLower() == "unmanaged")
         {
             for (int c = 0; c < iterations; c++)
             {
@@ -71,6 +86,31 @@ public class LeakMemoryController : ControllerBase
                 }
             }
         }
+        else if (flavor.ToLower() == "unmanaged2")
+        {
+            for (int c = 0; c < iterations; c++)
+            {
+                var ptr = Marshal.AllocHGlobal(buffSize);
+                try
+                {
+                    Span<byte> span;
+                    unsafe
+                    {
+                        span = new Span<byte>(ptr.ToPointer(), buffSize);
+                    }
+                    for (int i = 0; i < span.Length; i++)
+                    {
+                        span[i] = (byte)rdn.Next(0, 255);
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+                MyUnmanagedActuallyNotALeakSource.GetMySingleton().List.Add(ptr);
+            }
+        }
         else
         {
             for (int c = 0; c < iterations; c++)
@@ -80,11 +120,25 @@ public class LeakMemoryController : ControllerBase
                 {
                     buff[i] = (byte)rdn.Next(0, 255);
                 }
-                MyLeakSource.GetMySingleton().List.Add(buff);
+                MyManagedLeakSource.GetMySingleton().List.Add(buff);
             }
         }
 
         return ReportMemory();
+    }
+
+    [HttpGet("/cleanup")]
+    public void CleanUp()
+    {
+        foreach (var item in MyUnmanagedActuallyNotALeakSource.GetMySingleton().List)
+        {
+            unsafe
+            {
+                Marshal.FreeHGlobal(item);
+            }
+        }
+        MyManagedLeakSource.GetMySingleton().List.Clear();
+        GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive, true, true);
     }
 
     [HttpGet("/reportMemory")]
