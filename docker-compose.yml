@@ -6,3 +6,7 @@ services:
     build:
       context: .
       dockerfile: FlavorsOfMemoryLeak.Api/Dockerfile
+    deploy:
+      resources:
+        limits:
+          memory: 512M
